@@ -3,9 +3,6 @@
 // width = right (NSR) - left (NSL) -1
 // then area =  width * height
 
-
-
-
 class Solution {
 public:
 
@@ -14,7 +11,6 @@ public:
         int n=arr.size();
         stack<pair<int,int>>st;
         int pseudo_index=n+1;
-
 
         for(int i=n-1;i>=0;i--){
             if(st.size()==0){
