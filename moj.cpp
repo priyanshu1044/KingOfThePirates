@@ -1,108 +1,61 @@
-
-#include <bits/stdc++.h>
-using namespace std;
-
-int precedence(char c)
+class Solution
 {
-    if (c == '^')
-        return 3;
-    else if (c == '/' || c == '*')
-        return 2;
-    else if (c == '+' || c == '-')
-        return 1;
-    else
-        return -1;
-}
-string infixToPostfix(string s)
-{
-    // Your code here
-    stack<char> st;
-    string ans;
+    public:
+    vector<vector<int>> LCS(string x ,string y, int n , int m){
+        vector<vector<int>>t(n+1,vector<int>(m+1));
 
-    for (int i = 0; i < s.length(); i++)
-    {
-        char c = s[i];
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
-            ans += c;
-        else if (c == '(')
-            st.push('(');
-        else if (c == ')')
+        for (int i = 0; i < n+1; i++)
         {
-            while (st.top() != '(')
+            for (int j = 0; j < m+1; j++)
             {
-                ans += st.top();
-                st.pop();
+                if(i==0||j==0){
+                    t[i][j]=0;
+                }
             }
-            st.pop();
         }
-        else
-        {
-            while (!st.empty() && precedence(s[i]) <= precedence(st.top()))
-            {
-                ans += st.top();
-                st.pop();
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<m+1;j++){
+                if(x[i-1]==y[j-1]){
+                    t[i][j]=1+t[i-1][j-1];
+                }
+                else{
+                    t[i][j]=max(t[i-1][j],t[i][j-1]);
+                }
             }
-            st.push(c);
+        }
+        return t;
+    }
+    string printLCS(string &x, string &y,int n, int m){
+    // Write your code here.	
+        vector<vector<int>>t=LCS(x,y,n,m);
+        int i=n,j=m;
+        string op="";
+        while(i>0&&j>0){
+            if(x[i-1]==y[j-1]){
+                op.push_back(x[i-1]);
+                i--;
+                j--;
+            }
+            else{
+                if(t[i][j-1]>t[i-1][j]){
+                    j--;
+                }
+                else{
+                    i--;
+                }
+            }
+        }
+        reverse(op.begin(),op.end());
+        return op;
+    }
+    //Function to find length of shortest common supersequence of two strings.
+    string shortestCommonSupersequence(string str1, string str2) {
+        int n=str1.size();
+        int m=str2.size();
+        //code here
+        string lcs=printLCS(X,Y,n,m);
+        if(str1.length()<str2.length()){
+            swap(str1,str2);
         }
     }
-    while (!st.empty())
-    {
-        ans += st.top();
-        st.pop();
-    }
-    return ans;
 }
-void tableP(string s){
-    stack<char>st;
-    char temp='A';
-    int n=s.length();
-    cout<<"OP"<<"  s1  s2  tmp\n";
-    for(int i=0;i<n;i++){
-        char c = s[i];
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
-            st.push(c);
-        else{
-            cout<<s[i]<<"   ";
-            char sec=st.top();
-            st.pop();
-            char fir=st.top();
-            st.pop();
-            cout<<fir<<"    "<<sec<<"    "<<temp<<"\n";
-            st.push(temp);
-            temp++;
-        }
-    }
-}
-//{ Driver Code Starts.
-// Driver program to test above functions
-int main()
-{
-    string s = "m=a+b*c-d/e^h";
-    string op = infixToPostfix(s.substr(2, s.length()));
-    op.push_back('=');
-    char c = s[0];
-    op = c + op;
-    cout <<"suffix : "<< op<<endl;
-    cout<<"table\n";
-    tableP(op);
-}
-
-// } Driver Code Ends
-
-
-/*
-----------------------------------------------------------
-ip:
-m=a+b*c-d/e^h
-
-op:
-suffix : mabc*+deh^/-=
-table
-OP  s1  s2  tmp
-*   b    c    A
-+   a    A    B
-^   e    h    C
-/   d    C    D
--   B    D    E
-=   m    E    F
-*/
