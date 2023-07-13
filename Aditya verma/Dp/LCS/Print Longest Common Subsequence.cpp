@@ -1,52 +1,54 @@
-vector<vector<int>> LCS(string x ,string y, int n , int m){
-    vector<vector<int>>t(n+1,vector<int>(m+1));
-
-    for (int i = 0; i < n+1; i++)
-    {
-        for (int j = 0; j < m+1; j++)
-        {
-            if(i==0||j==0){
-                t[i][j]=0;
+class Solution {
+public:
+    vector<vector<int>> LCS(string x,string y,int n,int m){
+        vector<vector<int>> t(n+1,vector<int>(m+1,0));
+        
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<m+1;j++){
+                if(x[i-1]==y[j-1]){
+                    t[i][j]=1+t[i-1][j-1];
+                }else{
+                    t[i][j]=max(t[i-1][j],t[i][j-1]);
+                }
             }
         }
+        
+        return t;
     }
-    for(int i=1;i<n+1;i++){
-        for(int j=1;j<m+1;j++){
-            if(x[i-1]==y[j-1]){
-                t[i][j]=1+t[i-1][j-1];
+    
+    string printSCS(string x,string y,int n,int m){//shortest common supersequence
+        vector<vector<int>> t=LCS(x,y,n,m);// make a table for lcs
+        
+        int i=n,j=m;
+        string op="";
+        while(i>0&&j>0){    
+            if(x[i-1]==y[j-1]){ //if equal then add one of them
+                op.push_back(x[i-1]);
+                i--;j--;    //move to diagonal element
             }
             else{
-                t[i][j]=max(t[i-1][j],t[i][j-1]);
+                if(t[i][j-1]>t[i-1][j]){//if left is greater than top then add left in op
+                    op.push_back(y[j-1]);
+                    j--;
+                }else{  //else add top in op
+                    op.push_back(x[i-1]);
+                    i--;
+                }
             }
         }
-    }
-    return t;
-}
-string printLCS(string &x, string &y,int n, int m){
-    // Write your code here.	
-    vector<vector<int>>t=LCS(x,y,n,m);
-    int i=n,j=m;
-    string op="";
-    while(i>0&&j>0){
-        if(x[i-1]==y[j-1]){
+        while(i>0){//if any of the string is left then add it in op
             op.push_back(x[i-1]);
             i--;
+        }
+        while(j>0){//if any of the string is left then add it in op
+            op.push_back(y[j-1]);
             j--;
         }
-        else{
-            if(t[i][j-1]>t[i-1][j]){
-                j--;
-            }
-            else{
-                i--;
-            }
-        }
+        //reverse the op string
+        reverse(op.begin(),op.end());
+        return op;
     }
-    reverse(op.begin(),op.end());
-    return op;
-}
-
-string findLCS(int n, int m,string &s1, string &s2){
-	// Write your code here.
-    return printLCS(s1,s2,n,m);	
-}
+    string shortestCommonSupersequence(string str1, string str2) {
+        return printSCS(str1,str2,str1.length(),str2.length());
+    }
+};
